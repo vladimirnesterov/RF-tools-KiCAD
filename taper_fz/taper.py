@@ -48,7 +48,18 @@ def __Zone(board, points, track):
         z.SetZoneClearance(track.GetClearance())
     else: # kv6
         z = ZONE(board)
-        z.SetLocalClearance(track.GetLocalClearance(track.GetClass()))
+        trackLocalClearance = track.GetLocalClearance(track.GetClass())
+        if trackLocalClearance is None:
+            net = track.GetNet()
+            netName = net.GetNetname()
+            allNetClass = board.GetAllNetClasses()
+            if netName in allNetClass.keys():
+                clearance = allNetClass[netName].GetClearance()
+            else:
+                clearance = allNetClass['Default'].GetClearance()
+            z.SetLocalClearance(clearance)
+        else:
+            z.SetLocalClearance(trackLocalClearance)
     # Add zone properties
     z.SetLayer(track.GetLayer())
     z.SetNetCode(track.GetNetCode())
